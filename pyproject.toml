@@ -1,0 +1,30 @@
+[project]
+name = "mcp-chess-coach"
+version = "0.1.0"
+description = "MCP server for chess coaching with Stockfish"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "python-chess>=1.999",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# ⭐ AGGIUNGI QUESTA SEZIONE ⭐
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+]
