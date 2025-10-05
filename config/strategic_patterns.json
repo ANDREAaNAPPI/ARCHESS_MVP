@@ -1,0 +1,167 @@
+{
+  "patterns": [
+    {
+      "id": "minority_attack",
+      "name": "Minority Attack",
+      "description": "Attack the opponent's pawn majority with your minority to create weaknesses",
+      "skill_level": "intermediate",
+      "typical_rating_range": [1400, 2400],
+      "complexity": 6,
+      "preconditions": [
+        "opponent_has_queenside_pawn_majority",
+        "player_has_queenside_pawn_minority",
+        "player_rooks_can_support_queenside",
+        "position_is_relatively_closed"
+      ],
+      "typical_moves": ["b4", "a4", "Rfb1", "Rab1", "b5"],
+      "key_ideas": [
+        "Push b4-b5 to attack opponent's c6 pawn",
+        "Double rooks on b-file for pressure",
+        "Force opponent to either capture or defend passively",
+        "Create weak squares and backward pawns"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 16,
+        "phase": ["middlegame", "endgame"],
+        "castling_pattern": "opposite_or_same_queenside"
+      }
+    },
+    
+    {
+      "id": "kingside_pawn_storm",
+      "name": "Kingside Pawn Storm",
+      "description": "Push pawns toward the opponent's castled king to open lines for attack",
+      "skill_level": "novice",
+      "typical_rating_range": [1000, 2600],
+      "complexity": 5,
+      "preconditions": [
+        "opposite_side_castling",
+        "player_has_pawn_majority_kingside",
+        "player_pieces_can_support_attack"
+      ],
+      "typical_moves": ["g4", "h4", "g5", "h5", "g6", "h6"],
+      "key_ideas": [
+        "Push pawns to open files/diagonals",
+        "Create weaknesses in opponent's pawn shield",
+        "Coordinate pieces behind the pawn advance",
+        "Race to attack before opponent's counterplay"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 20,
+        "phase": ["middlegame"],
+        "castling_pattern": "opposite_sides"
+      }
+    },
+    
+    {
+      "id": "central_pawn_break",
+      "name": "Central Pawn Break",
+      "description": "Break central tension with pawn advance to open lines and activate pieces",
+      "skill_level": "intermediate",
+      "typical_rating_range": [1200, 2600],
+      "complexity": 4,
+      "preconditions": [
+        "central_tension_exists",
+        "player_pieces_support_break",
+        "opponent_cannot_easily_blockade"
+      ],
+      "typical_moves": ["d4-d5", "e4-e5", "d5-d6", "e5-e6", "c4-c5", "f4-f5"],
+      "key_ideas": [
+        "Open lines for bishops and rooks",
+        "Gain space advantage",
+        "Create passed pawns",
+        "Activate dormant pieces"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 16,
+        "phase": ["opening", "middlegame"],
+        "castling_pattern": "any"
+      }
+    },
+    
+    {
+      "id": "file_opening_pressure",
+      "name": "File Opening and Pressure",
+      "description": "Open a file and double rooks to create pressure on opponent's position",
+      "skill_level": "novice",
+      "typical_rating_range": [1000, 2600],
+      "complexity": 3,
+      "preconditions": [
+        "semi_open_or_open_file_available",
+        "player_has_both_rooks",
+        "target_exists_on_file"
+      ],
+      "typical_moves": ["Rfd1", "Rad1", "Rfc1", "Rac1", "Rfe1", "Rae1"],
+      "key_ideas": [
+        "Place rooks on open/semi-open file",
+        "Double rooks for maximum pressure",
+        "Target weak pawns or pieces",
+        "Penetrate to 7th or 8th rank if possible"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 12,
+        "phase": ["middlegame", "endgame"],
+        "castling_pattern": "any"
+      }
+    },
+    
+    {
+      "id": "piece_simplification",
+      "name": "Piece Trade Simplification",
+      "description": "Trade pieces when ahead to reach a winning endgame",
+      "skill_level": "intermediate",
+      "typical_rating_range": [1200, 2600],
+      "complexity": 5,
+      "preconditions": [
+        "player_is_material_ahead",
+        "opponent_has_active_pieces",
+        "resulting_endgame_is_winning"
+      ],
+      "typical_moves": ["piece_trades", "queen_trade", "minor_piece_trades"],
+      "key_ideas": [
+        "Trade pieces, not pawns",
+        "Reduce opponent's counterplay",
+        "Simplify to technically winning endgame",
+        "Keep pieces that complement your advantages"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 8,
+        "phase": ["middlegame", "endgame"],
+        "castling_pattern": "any"
+      }
+    },
+    
+    {
+      "id": "knight_outpost",
+      "name": "Knight Outpost Establishment",
+      "description": "Place a knight on a strong, unassailable square deep in opponent's position",
+      "skill_level": "intermediate",
+      "typical_rating_range": [1200, 2400],
+      "complexity": 4,
+      "preconditions": [
+        "strong_square_exists",
+        "square_cannot_be_attacked_by_pawns",
+        "knight_can_reach_square_safely"
+      ],
+      "typical_moves": ["Nd5", "Ne5", "Nc5", "Nf5", "knight_maneuvers"],
+      "key_ideas": [
+        "Identify squares opponent cannot control with pawns",
+        "Maneuver knight to outpost",
+        "Support outpost with pawns/pieces",
+        "Use outpost as base for further operations"
+      ],
+      "prerequisites": {
+        "min_pieces_on_board": 18,
+        "phase": ["opening", "middlegame"],
+        "castling_pattern": "any"
+      }
+    }
+  ],
+  
+  "metadata": {
+    "version": "0.1.0",
+    "total_patterns": 6,
+    "complexity_scale": "1-10, where 1=simple, 10=GM-level",
+    "skill_levels": ["beginner", "novice", "intermediate", "advanced", "expert"]
+  }
+}
