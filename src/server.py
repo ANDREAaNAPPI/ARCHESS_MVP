@@ -13,6 +13,8 @@ from pathlib import Path
 from .analyzers.plan_detector import PlanDetector
 from .analyzers.plan_evaluator import PlanEvaluator
 from .stockfish_wrapper import StockfishWrapper
+from .analyzers.game_analyzer import GameAnalyzer
+from .utils.pgn_parser import PGNParser
 
 # Aggiungi root al path se eseguito come modulo
 if __name__ == "__main__":
@@ -32,6 +34,7 @@ stockfish = StockfishWrapper(default_depth=20)
 plan_detector = PlanDetector()
 plan_evaluator = None
 
+game_analyzer = None
 # --- Pydantic Models per input validation ---
 
 class AnalyzePositionInput(BaseModel):
@@ -74,6 +77,21 @@ class EvaluatePlanInput(BaseModel):
         description="List of moves (UCI format) representing the plan"
     )
     player_rating: int = Field(default=1500, ge=800, le=3000)
+
+
+class AnalyzeGameInput(BaseModel):
+    """Input per analyze_game tool."""
+    pgn: str = Field(description="Complete PGN of the game to analyze")
+    player_rating: int = Field(
+        default=1500,
+        ge=800,
+        le=3000,
+        description="Player's ELO rating"
+    )
+    analyze_all_moves: bool = Field(
+        default=False,
+        description="If true, analyze every move (slower but more thorough)"
+    )
 
 # --- Helper functions ---
 
@@ -172,6 +190,16 @@ async def list_tools() -> list[Tool]:
                 "Returns soundness rating, risks, and alternatives if the plan is dubious."
             ),
             inputSchema=EvaluatePlanInput.model_json_schema()
+        ),
+        Tool(
+            name="analyze_game",
+            description=(
+                "Analyze a complete chess game from PGN. "
+                "Identifies critical moments (blunders, mistakes, brilliancies), "
+                "detects strategic patterns, and provides phase-by-phase summary. "
+                "Use analyze_all_moves=false for quick scan, true for thorough analysis."
+            ),
+            inputSchema=AnalyzeGameInput.model_json_schema()
         ),
     ]
 
@@ -321,6 +349,49 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             text=str(response)
         )]
     
+    elif name == "analyze_game":
+        # Validate input
+        input_data = AnalyzeGameInput(**arguments)
+        
+        logger.info(f"Analyzing game (rating={input_data.player_rating}, all_moves={input_data.analyze_all_moves})")
+        
+        # Analizza partita
+        result = game_analyzer.analyze_game(
+            input_data.pgn,
+            input_data.player_rating,
+            analyze_all_moves=input_data.analyze_all_moves
+        )
+        
+        # Format response
+        response = {
+            "game_info": result.game_info,
+            "statistics": result.overall_statistics,
+            "critical_moments": [
+                {
+                    "move": f"{m.move_number}. {m.move_san}",
+                    "player": m.player,
+                    "type": m.type,
+                    "eval_swing": f"{m.eval_swing:+.2f}",
+                    "explanation": m.explanation,
+                    "best_move": m.best_move,
+                    "fen": m.fen_before
+                }
+                for m in result.critical_moments[:10]  # Top 10 critical moments
+            ],
+            "phases": {
+                "opening": result.phase_summaries["opening"],
+                "middlegame": result.phase_summaries["middlegame"],
+                "endgame": result.phase_summaries["endgame"]
+            },
+            "patterns_detected_count": len(result.patterns_detected),
+            "patterns_sample": result.patterns_detected[:3]  # Top 3 patterns
+        }
+        
+        return [TextContent(
+            type="text",
+            text=str(response)
+        )]
+    
     else:
         raise ValueError(f"Unknown tool: {name}")
 
@@ -345,6 +416,10 @@ def main():
     plan_evaluator = PlanEvaluator(stockfish)
     logger.info("Plan evaluator initialized!")
     
+    # Inizializza game analyzer
+    game_analyzer = GameAnalyzer(stockfish, plan_detector)
+    logger.info("Game analyzer initialized!")
+
     # Run server
     import asyncio
     from mcp.server.stdio import stdio_server
