@@ -47,12 +47,15 @@ async def test_analyze_game_quick():
     print(response[:500] + "..." if len(response) > 500 else response)
     print()
     
-    # Verify key elements
-    assert "statistics" in response
-    assert "critical_moments" in response
-    assert "blunder" in response or "mistake" in response
+    # Verify key elements in formatted output
+    assert "GAME ANALYSIS REPORT" in response
+    assert "STATISTICS" in response
+    assert "CRITICAL MOMENTS" in response
+    assert ("blunder" in response.lower() or 
+            "mistake" in response.lower() or 
+            "inaccuracy" in response.lower())
     
-    print("✓ Test passed\n")
+    print("✓ Test passed - formatted output verified\n")
 
 
 async def test_analyze_game_thorough():
@@ -87,10 +90,12 @@ async def test_analyze_game_thorough():
     print(response[:500] + "..." if len(response) > 500 else response)
     print()
     
-    assert "statistics" in response
-    assert "phases" in response
+    # Verify formatted output
+    assert "GAME ANALYSIS REPORT" in response
+    assert "PHASE BREAKDOWN" in response
+    assert "Total moves" in response
     
-    print("✓ Test passed\n")
+    print("✓ Test passed - thorough analysis complete\n")
 
 
 async def main():

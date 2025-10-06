@@ -15,6 +15,9 @@ from .analyzers.plan_evaluator import PlanEvaluator
 from .stockfish_wrapper import StockfishWrapper
 from .analyzers.game_analyzer import GameAnalyzer
 from .utils.pgn_parser import PGNParser
+from .utils.output_formatter import OutputFormatter
+from .utils.interaction_helper import InteractionHelper
+from .analyzers.pattern_tracker import PatternTracker
 
 # Aggiungi root al path se eseguito come modulo
 if __name__ == "__main__":
@@ -29,12 +32,15 @@ logger = logging.getLogger(__name__)
 app = Server("chess-coach")
 
 # Inizializza Stockfish wrapper (global per ora)
-stockfish = StockfishWrapper(default_depth=20)
 
+stockfish = StockfishWrapper(default_depth=20)
 plan_detector = PlanDetector()
 plan_evaluator = None
-
 game_analyzer = None
+formatter = OutputFormatter()
+interaction_helper = InteractionHelper()
+pattern_tracker = PatternTracker()
+
 # --- Pydantic Models per input validation ---
 
 class AnalyzePositionInput(BaseModel):
@@ -235,7 +241,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         
         return [TextContent(
             type="text",
-            text=str(response)
+            text=formatter.format_position_analysis(response)
         )]
     
     elif name == "evaluate_move":
@@ -269,7 +275,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         
         return [TextContent(
             type="text",
-            text=str(response)
+            text=formatter.format_move_evaluation(response)
         )]
     
     elif name == "detect_strategic_plans":
@@ -305,7 +311,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         
         return [TextContent(
             type="text",
-            text=str(response)
+            text=formatter.format_strategic_plans(response)
         )]
     
     elif name == "evaluate_plan":
@@ -346,7 +352,7 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         
         return [TextContent(
             type="text",
-            text=str(response)
+            text=formatter.format_plan_evaluation(response)
         )]
     
     elif name == "analyze_game":
@@ -386,10 +392,49 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             "patterns_detected_count": len(result.patterns_detected),
             "patterns_sample": result.patterns_detected[:3]  # Top 3 patterns
         }
+        # Generate interaction suggestions
+        interaction_checkpoints = interaction_helper.generate_checkpoints(
+            result.critical_moments,
+            result.patterns_detected,
+            input_data.player_rating
+        )
         
+        # Analyze recurring patterns
+        recurring_analysis = pattern_tracker.analyze_recurring_patterns(
+            result.critical_moments,
+            result.patterns_detected
+        )
+        
+        # Format response
+        response = {
+            "game_info": result.game_info,
+            "statistics": result.overall_statistics,
+            "critical_moments": [
+                {
+                    "move": f"{m.move_number}. {m.move_san}",
+                    "player": m.player,
+                    "type": m.type,
+                    "eval_swing": f"{m.eval_swing:+.2f}",
+                    "explanation": m.explanation,
+                    "best_move": m.best_move,
+                    "fen": m.fen_before
+                }
+                for m in result.critical_moments[:10]
+            ],
+            "phases": {
+                "opening": result.phase_summaries["opening"],
+                "middlegame": result.phase_summaries["middlegame"],
+                "endgame": result.phase_summaries["endgame"]
+            },
+            "patterns_detected_count": len(result.patterns_detected),
+            "patterns_sample": result.patterns_detected[:3],
+            "interaction_suggestions": interaction_checkpoints,
+            "recurring_patterns": recurring_analysis  # <-- AGGIUNGI QUESTO
+        }
+
         return [TextContent(
             type="text",
-            text=str(response)
+            text=formatter.format_game_analysis(response)
         )]
     
     else:
