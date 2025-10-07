@@ -191,9 +191,9 @@ Create/edit %APPDATA%\Claude\claude_desktop_config.json (Windows) or ~/Library/A
     "chess-coach": {
       "command": "python",
       "args": ["-m", "src.server"],
-      "cwd": "C:\\path\\to\\mcp-chess-coach",
+      "cwd": "C:\\path\\to\\Archess",
       "env": {
-        "PYTHONPATH": "C:\\path\\to\\mcp-chess-coach"
+        "PYTHONPATH": "C:\\path\\to\\Archess"
       }
     }
   }
