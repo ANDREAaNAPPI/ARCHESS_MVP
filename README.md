@@ -189,7 +189,7 @@ Create/edit %APPDATA%\Claude\claude_desktop_config.json (Windows) or ~/Library/A
 ```json{
   "mcpServers": {
     "chess-coach": {
-      "command": "python",
+      "command": "-venv activation- python",
       "args": ["-m", "src.server"],
       "cwd": "C:\\path\\to\\Archess",
       "env": {
