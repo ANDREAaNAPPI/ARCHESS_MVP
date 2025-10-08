@@ -275,8 +275,7 @@ Implement precondition check in src/analyzers/plan_detector.py.
 - **Quick Game Analysis:** ~1-3s (10-move game)
 - **Thorough Game Analysis:** ~10-30s (20-move game)
 
-## 🤝 Contributing
-Contributions welcome! Areas for improvement:
+## 🤝 Areas for improvement:
 
 - More strategic patterns (20+ total)
 - Opening book integration
@@ -284,14 +283,6 @@ Contributions welcome! Areas for improvement:
 - Advanced pattern matching (piece maneuvers)
 - Endgame tablebase integration
 - Web interface
-
-## 📝 License
-MIT License - see LICENSE file
-## 🙏 Credits
-
-- **Stockfish** - The world's strongest chess engine
-- **python-chess** - Python chess library
-- **Model Context Protocol** - Anthropic's MCP framework
 
 ## 📧 Contact
 Andrea Nappi - andi.nappi@gmail.com
